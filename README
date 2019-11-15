@@ -58,4 +58,52 @@ private class AnimalLocatorTest {
     }
 }
 
+**Apex Soap Callout challenge**
+
+public class ParkLocator {
+    public static String[] country(String ctr){
+        ParkService.ParksImplPort prk = new ParkService.ParksImplPort();
+        return prk.byCountry(ctr);
+    }
+}
+
+
+
+@isTest
+global class ParkServiceMock  implements WebServiceMock{
+     global void doInvoke(
+           Object stub,
+           Object request,
+           Map<String, Object> response,
+           String endpoint,
+           String soapAction,
+           String requestName,
+           String responseNS,
+           String responseName,
+           String responseType) {
+               ParkService.byCountryResponse response_x = new ParkService.byCountryResponse();
+               List<String> parkList = new List<String> {'Park1','Park2','Park3'};
+                   response_x.return_x = parkList;
+               response.put('response_x', response_x); 
+              
+               
+                   }
+}
+
+
+
+
+@isTest
+private class ParkLocatorTest {
+    @isTest static void testCallout() {
+        Test.setMock(WebServiceMock.class, new ParkServiceMock());
+        List<String> result = new List<String>();
+        List<String> expectedList = new List<String> {'Park1','Park2','Park3'};
+            result = ParkLocator.country('India');
+        System.assertEquals(expectedList, result);
+        
+    }
+
+}
+
 
