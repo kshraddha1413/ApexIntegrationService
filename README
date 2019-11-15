@@ -57,7 +57,7 @@ private class AnimalLocatorTest {
         System.assertEquals(result, expectedResult);
     }
 }
-
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 **Apex Soap Callout challenge**
 
 public class ParkLocator {
