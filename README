@@ -119,4 +119,43 @@ Run your test class at least once (via 'Run All' tests the Developer Console) be
 
 
 
+@RestResource(urlMapping='/Accounts/*/contacts')
+global class AccountManager {
+    @HttpGet
+    global static Account getAccount(){
+        RestRequest request = RestContext.request;
+        String acctId = request.requestURI.subStringBetween('Accounts/','/contacts');
+        system.debug(acctId);
+        Account actObj = [SELECT ID,Name,(SELECT ID, Name from Contacts) FROM Account WHERE ID =:acctId LIMIT 1];
+        return actObj;
+    }
+    
+}
+
+
+
+
+
+@isTest
+private class AccountManagerTest {
+   
+    static testMethod void testMethod1(){
+
+        Account objAct = new Account(Name = 'Test');
+        insert objAct;
+        
+        Contact objCon = new Contact(LastName = 'LTest', AccountId = objAct.Id);
+        insert objCon;
+        Id recordId= objAct.Id;
+        RestRequest request = new RestRequest();
+        request.requestURI = 'https://na174.salesforce.com//services/apexrest/Accounts/'+ recordId +'/contacts';
+        request.httpMethod = 'GET';
+        RestContext.request = request;
+        Account thisAct = AccountManager.getAccount();
+        system.assert(thisAct != null);
+        system.assertEquals('Test' , thisAct.Name);
+    }
+    
+
+
 
